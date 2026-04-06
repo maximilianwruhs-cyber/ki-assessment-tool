@@ -365,6 +365,8 @@ MODULES.forEach((mod, mi) => {
     });
 });
 
+let slideDirection = 'right';
+
 // ===== INIT =====
 function startAssessment() {
     state.clientName = document.getElementById("clientName").value || "Unbenannt";
@@ -396,6 +398,7 @@ function buildModuleNav() {
         return `<button class="module-tab" data-module="${i}" onclick="jumpToModule(${i})">
             <span class="tab-dot ${dotClass}"></span>
             ${mod.icon} ${mod.id}. ${mod.name}
+            <span class="tab-score" id="tab-score-${i}"></span>
         </button>`;
     }).join("");
     updateModuleNav();
@@ -411,11 +414,29 @@ function getModuleDotClass(moduleIndex) {
 
 function updateModuleNav() {
     const currentModule = allQuestions[state.currentQuestion].moduleIndex;
+    const scores = calculateModuleScores();
     document.querySelectorAll(".module-tab").forEach((tab, i) => {
         tab.classList.toggle("active", i === currentModule);
         const dot = tab.querySelector(".tab-dot");
         dot.className = `tab-dot ${getModuleDotClass(i)}`;
+        
+        const scoreSpan = document.getElementById(`tab-score-${i}`);
+        if (scoreSpan && scores[MODULES[i].id].count > 0) {
+            scoreSpan.textContent = `— ${scores[MODULES[i].id].avg.toFixed(1)}`;
+        } else if (scoreSpan) {
+            scoreSpan.textContent = '';
+        }
     });
+}
+
+function animateFloatingScore(moduleIndex, addedLevel) {
+    const tab = document.querySelector(`.module-tab[data-module="${moduleIndex}"]`);
+    if (!tab) return;
+    const floatEl = document.createElement("div");
+    floatEl.className = "module-score-float";
+    floatEl.textContent = `+${addedLevel}`;
+    tab.appendChild(floatEl);
+    setTimeout(() => floatEl.remove(), 1000);
 }
 
 function jumpToModule(moduleIndex) {
@@ -445,8 +466,19 @@ function renderQuestion() {
     }).join("");
     
     const card = document.getElementById("cardArea");
+    
+    // Dynamic notes placeholder based on context
+    const notesPlaceholders = [
+        "Beschreiben Sie Ihren Workflow — wir integrieren dies in Ihren Aktionsplan...",
+        "Welche Tools nutzen Sie bereits? Wir prüfen lokale Open-Source-Alternativen...",
+        "Gibt es spezielle Flaschenhälse? Wir suchen nach Automatisierungspotenzial...",
+        "Ergänzende Gedanken oder Beispiele aus dem Alltag...",
+        "Wie gehen Ihre Mitarbeiter momentan mit diesen Aufgaben um?"
+    ];
+    const placeholder = notesPlaceholders[state.currentQuestion % notesPlaceholders.length];
+
     card.innerHTML = `
-        <div class="question-card">
+        <div class="question-card slide-in-${slideDirection}">
             <div class="card-meta">
                 <span class="badge badge-module">${q.module.icon} Modul ${q.module.id}</span>
                 <span class="badge badge-target">🎯 ${q.target}</span>
@@ -471,7 +503,7 @@ function renderQuestion() {
             <div class="notes-group">
                 <label>📝 Eigene Notizen (optional)</label>
                 <textarea class="notes-textarea" id="notesInput" 
-                          placeholder="Ergänzende Gedanken, Beispiele aus dem Alltag..."
+                          placeholder="${placeholder}"
                           oninput="autoSaveNotes()">${answer.notes || ''}</textarea>
             </div>
         </div>
@@ -479,8 +511,12 @@ function renderQuestion() {
     
     document.getElementById("questionCounter").textContent = 
         `${state.currentQuestion + 1} / ${allQuestions.length}`;
-    document.getElementById("progressBar").style.width = 
-        `${((state.currentQuestion + 1) / allQuestions.length) * 100}%`;
+        
+    const pct = ((state.currentQuestion + 1) / allQuestions.length) * 100;
+    const pContainer = document.querySelector(".progress-container");
+    if (pContainer) {
+        pContainer.innerHTML = `<div class="progress-bar" id="progressBar" style="width: ${pct}%"></div><div class="progress-text">${Math.round(pct)}% abgeschlossen</div>`;
+    }
     
     document.getElementById("btnPrev").style.visibility = state.currentQuestion === 0 ? "hidden" : "visible";
     const btnNext = document.getElementById("btnNext");
@@ -498,11 +534,28 @@ function renderQuestion() {
 // ===== INTERACTION =====
 function selectChoice(index) {
     const q = allQuestions[state.currentQuestion];
+    const prevAnswer = state.answers[q.key] ? state.answers[q.key].choiceIndex : undefined;
+    
     if (!state.answers[q.key]) state.answers[q.key] = { choiceIndex: undefined, notes: "" };
     state.answers[q.key].choiceIndex = index;
     const errorEl = document.getElementById("choiceError");
     if (errorEl) errorEl.style.display = "none";
+    
     renderQuestion();
+    
+    // Gamification enhancements
+    const choice = q.choices[index];
+    if (prevAnswer !== index) {
+        animateFloatingScore(q.moduleIndex, choice.level);
+        
+        let toastMsg = "";
+        if (choice.level === 3) toastMsg = "🚀 Optimal — Expertise erkannt";
+        else if (choice.level === 2) toastMsg = "🟢 Solide Grundlage";
+        else if (choice.level === 1) toastMsg = "🟡 Aufbaupotenzial identifiziert";
+        else if (choice.level === 0) toastMsg = "🔴 Handlungsbedarf erkannt — Lösung im Plan";
+        
+        showToast(toastMsg, choice.level);
+    }
 }
 
 function saveCurrentAnswer() {
@@ -532,6 +585,7 @@ function attemptNextQuestion() {
     }
     if (state.currentQuestion < allQuestions.length - 1) {
         state.currentQuestion++;
+        slideDirection = 'right';
         renderQuestion();
         window.scrollTo(0, 0);
     }
@@ -550,6 +604,7 @@ function prevQuestion() {
     saveCurrentAnswer();
     if (state.currentQuestion > 0) {
         state.currentQuestion--;
+        slideDirection = 'left';
         renderQuestion();
         window.scrollTo(0, 0);
     }
@@ -682,13 +737,176 @@ function drawRadarChart(canvasId, scores) {
     });
 }
 
+// ===== OCTALYSIS DRIVE CALCULATION =====
+function calculateOctalysisDrives() {
+    const drives = [
+        { label: "Sinnhaftigkeit", val: 0.3, color: "#22c55e" },
+        { label: "Entwicklung", val: 0.3, color: "#3b82f6" },
+        { label: "Kreativität", val: 0.3, color: "#8b5cf6" },
+        { label: "Eigentum", val: 0.3, color: "#f59e0b" },
+        { label: "Einfluss", val: 0.3, color: "#ec4899" },
+        { label: "Verknappung", val: 0.2, color: "#ef4444" },
+        { label: "Ungewissheit", val: 0.2, color: "#f97316" },
+        { label: "Verlust", val: 0.2, color: "#dc2626" }
+    ];
+    
+    allQuestions.forEach(q => {
+        const a = state.answers[q.key];
+        if (!a || a.choiceIndex === undefined) return;
+        const choice = q.choices[a.choiceIndex];
+        const mod = q.module;
+        
+        // Map answers to drives based on module context
+        if (mod.id === 'A') { // Strategie
+            drives[0].val += choice.level * 0.08; // Epic Meaning rises with strategic clarity
+            drives[1].val += choice.level * 0.06;
+        }
+        if (mod.id === 'B') { // Prozesse
+            drives[2].val += choice.level * 0.07; // Creativity rises with process maturity
+            drives[3].val += (3 - choice.level) * 0.06; // Ownership need rises when processes are weak
+        }
+        if (mod.id === 'C') { // Daten & IT
+            drives[1].val += choice.level * 0.05; // Accomplishment from data maturity
+            drives[5].val += (3 - choice.level) * 0.05; // Scarcity pressure from data gaps
+        }
+        if (mod.id === 'D') { // Kultur
+            drives[4].val += choice.level * 0.08; // Social Influence from team readiness
+            drives[7].val += (3 - choice.level) * 0.06; // Loss Avoidance from resistance
+        }
+        if (mod.id === 'E') { // Compliance
+            drives[6].val += (3 - choice.level) * 0.06; // Uncertainty from compliance gaps
+            drives[7].val += (3 - choice.level) * 0.05;
+        }
+        if (mod.id === '0') { // Pre-Assessment
+            drives[0].val += choice.level * 0.05;
+            drives[2].val += choice.level * 0.05;
+        }
+    });
+    
+    // Clamp 0..1
+    drives.forEach(d => d.val = Math.min(1, Math.max(0.15, d.val)));
+    return drives;
+}
+
+// ===== ROI ESTIMATION =====
+function estimateROI() {
+    const manualQ = allQuestions.find(q => q.topic === "Manuelle Last");
+    const a = manualQ ? state.answers[manualQ.key] : null;
+    if (!a || a.choiceIndex === undefined) return null;
+    
+    const hourRanges = [25, 20, 10, 3]; // hrs/week saved per level
+    const weeklyHours = hourRanges[a.choiceIndex] || 10;
+    const hourlyRate = state.companyStage === 'enterprise' ? 85 : state.companyStage === 'kmu' ? 55 : 35;
+    const weeklySaving = weeklyHours * hourlyRate;
+    const yearlySaving = weeklySaving * 48; // 48 working weeks
+    const automationPct = a.choiceIndex <= 1 ? 40 : 20;
+    const realSaving = Math.round(yearlySaving * (automationPct / 100));
+    
+    return { weeklyHours, hourlyRate, automationPct, realSaving };
+}
+
+// ===== EXECUTIVE SUMMARY =====
+function buildExecutiveSummary(scores) {
+    const priorities = [];
+    const sorted = Object.entries(scores).sort((a, b) => a[1].avg - b[1].avg);
+    
+    sorted.slice(0, 3).forEach(([id, s]) => {
+        const urgency = s.avg < 1 ? '🔴 Sofort' : s.avg < 2 ? '🟡 Kurzfristig' : '🟢 Optimierung';
+        let action = '';
+        if (id === '0') action = 'KI-Grundlagen-Workshop durchführen';
+        else if (id === 'A') action = 'Strategische Ziele und KPIs definieren';
+        else if (id === 'B') action = 'Kernprozesse dokumentieren und erste Automatisierung starten';
+        else if (id === 'C') action = 'Daten konsolidieren und zentrale Plattform einrichten';
+        else if (id === 'D') action = 'Team-Schulung und Change-Management initiieren';
+        else if (id === 'E') action = 'DSGVO-Audit und Compliance-Framework aufsetzen';
+        priorities.push({ module: s.name, icon: s.icon, score: s.avg, urgency, action });
+    });
+    return priorities;
+}
+
+// ===== CONFETTI CELEBRATION =====
+function launchConfetti() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confettiCanvas';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const colors = ['#6366f1','#8b5cf6','#3b82f6','#22c55e','#f59e0b','#ec4899','#ef4444'];
+    for (let i = 0; i < 150; i++) {
+        particles.push({
+            x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+            y: canvas.height / 2,
+            vx: (Math.random() - 0.5) * 12,
+            vy: Math.random() * -14 - 4,
+            w: Math.random() * 8 + 4,
+            h: Math.random() * 6 + 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 12,
+            gravity: 0.15 + Math.random() * 0.1,
+            opacity: 1
+        });
+    }
+    
+    let frame = 0;
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.vy += p.gravity;
+            p.y += p.vy;
+            p.rotation += p.rotSpeed;
+            p.opacity -= 0.008;
+            if (p.opacity > 0 && p.y < canvas.height + 50) {
+                alive = true;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation * Math.PI / 180);
+                ctx.globalAlpha = Math.max(0, p.opacity);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+                ctx.restore();
+            }
+        });
+        frame++;
+        if (alive && frame < 200) requestAnimationFrame(animate);
+        else canvas.remove();
+    }
+    requestAnimationFrame(animate);
+}
+
+// ===== ANIMATED COUNTER =====
+function animateCounter(elementId, target, duration) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const start = 0;
+    const startTime = performance.now();
+    function step(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const current = start + (target - start) * eased;
+        el.textContent = current.toFixed(1);
+        if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
 // ===== REPORT =====
 function generateReport() {
     showScreen("report");
+    launchConfetti();
     
     const scores = calculateModuleScores();
     const overall = getOverallScore(scores);
     const tools = collectRecommendedTools();
+    const drives = calculateOctalysisDrives();
+    const roi = estimateROI();
+    const priorities = buildExecutiveSummary(scores);
     
     // Build module scores bars
     let modulesBarsHTML = Object.entries(scores).map(([id, s]) => {
@@ -703,6 +921,57 @@ function generateReport() {
             <span class="score-bar-value" style="color:${color}">${s.avg.toFixed(1)} <small>${label}</small></span>
         </div>`;
     }).join("");
+    
+    // Executive Summary
+    const execHTML = priorities.map(p => `
+        <div class="exec-priority">
+            <div class="exec-priority-header">
+                <span class="exec-icon">${p.icon}</span>
+                <span class="exec-module">${p.module}</span>
+                <span class="exec-urgency">${p.urgency}</span>
+            </div>
+            <div class="exec-action">→ ${p.action}</div>
+        </div>
+    `).join("");
+    
+    // ROI section
+    let roiHTML = '';
+    if (roi) {
+        roiHTML = `
+        <div class="report-module">
+            <h2>💰 Geschätztes Einsparpotenzial</h2>
+            <div class="roi-grid">
+                <div class="roi-card">
+                    <div class="roi-number">${roi.weeklyHours}h</div>
+                    <div class="roi-label">Manuelle Stunden / Woche</div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-number">${roi.automationPct}%</div>
+                    <div class="roi-label">Automatisierbar</div>
+                </div>
+                <div class="roi-card roi-card-highlight">
+                    <div class="roi-number">~${(roi.realSaving).toLocaleString('de-DE')}€</div>
+                    <div class="roi-label">Jährliches Einsparpotenzial</div>
+                </div>
+            </div>
+            <p class="roi-note">Berechnung: ${roi.weeklyHours}h × ${roi.hourlyRate}€/h × ${roi.automationPct}% Automatisierung × 48 Wochen. Konservative Schätzung basierend auf Ihren Angaben.</p>
+        </div>`;
+    }
+    
+    // Benchmark context
+    const benchStage = { startup: 1.2, kmu: 1.6, enterprise: 2.1 }[state.companyStage] || 1.6;
+    const benchDelta = overall - benchStage;
+    const benchVerdict = benchDelta >= 0 
+        ? `Sie liegen <strong>${benchDelta.toFixed(1)} Punkte über</strong> dem Branchendurchschnitt.`
+        : `Sie liegen <strong>${Math.abs(benchDelta).toFixed(1)} Punkte unter</strong> dem Branchendurchschnitt.`;
+    
+    // Engagement details — dynamic based on top drives
+    const sortedDrives = [...drives].sort((a, b) => b.val - a.val);
+    const topDrives = sortedDrives.slice(0, 3);
+    const weakDrives = sortedDrives.slice(-2);
+    const engagementInsight = `Ihr Team zeigt stärkstes Motivationspotenzial in <strong>${topDrives.map(d => d.label).join(', ')}</strong>. 
+        Die KI-Rollout-Strategie sollte diese Hebel gezielt nutzen — z.B. durch sichtbare Quick-Wins (${topDrives[0].label}) und transparente Fortschrittsanzeigen (${topDrives[1].label}). 
+        Schwächere Bereiche wie <strong>${weakDrives.map(d => d.label).join(' und ')}</strong> zeigen, dass Ihr Team weniger auf Druck als auf positive Verstärkung reagiert — ein gutes Zeichen für nachhaltige Adoption.`;
     
     // Build tool recommendation cards
     let toolsHTML = "";
@@ -788,9 +1057,17 @@ function generateReport() {
         </div>
         
         <div class="overall-score">
-            <div class="overall-number" style="color:${verdict.color}">${overall.toFixed(1)}</div>
+            <div class="overall-number" id="animatedScore" style="color:${verdict.color}">0.0</div>
             <div class="overall-label">von 3.0</div>
             <div class="overall-verdict" style="color:${verdict.color}">${verdict.emoji} ${verdict.text}</div>
+            <div class="benchmark-line">📊 Branchendurchschnitt (${getStageLabel(state.companyStage)}): ${benchStage.toFixed(1)} — ${benchVerdict}</div>
+        </div>
+        
+        <div class="report-module">
+            <h2>🎯 Executive Summary — Top 3 Prioritäten</h2>
+            <div class="exec-grid">
+                ${execHTML}
+            </div>
         </div>
         
         <div class="radar-container">
@@ -801,7 +1078,32 @@ function generateReport() {
             ${modulesBarsHTML}
         </div>
         
+        ${roiHTML}
+        
+        <div class="report-module">
+            <h2>🧠 Ihr Engagement-Profil (Octalysis)</h2>
+            <div class="engagement-profile-container">
+                <div class="engagement-chart-wrapper">
+                    <canvas id="octalysisChart" width="320" height="320"></canvas>
+                </div>
+                <div class="engagement-details">
+                    <h3>Wie Ihr Team motiviert wird</h3>
+                    <p>${engagementInsight}</p>
+                    <p>Wir fokussieren uns auf <strong>White Hat Gamification</strong> (Sinnhaftigkeit, Ermächtigung, Zugehörigkeit), um langfristige Adoption ohne manipulative Tricks zu gewährleisten.</p>
+                </div>
+            </div>
+        </div>
+        
         ${toolsHTML}
+
+        <div class="report-module">
+            <h2>🌍 Strategischer Rahmen: Sovereign AI</h2>
+            <div class="strategic-frame">
+                <p><strong>Warum empfehlen wir Open-Source und selbst-gehostete Lösungen?</strong></p>
+                <p>Der Markt für KI-Tools wird zunehmend von Cloud-Diensten dominiert, die oft auf Vendor-Lock-in basieren. Gleichzeitig steigen die regulatorischen Anforderungen in der EU (DSGVO, AI Act, Digital Fairness Act) massiv an.</p>
+                <p>Eine <strong>Sovereign AI Roadmap</strong> garantiert Ihnen volle Datenkontrolle, Unabhängigkeit von Monopolen und schützt Ihre sensiblen Geschäftsprozesse. Wir setzen auf sichere KI, die als Werkzeug dient und zu 100% Ihnen gehört.</p>
+            </div>
+        </div>
         
         <div class="report-module">
             <h2>📋 Detaillierte Ergebnisse</h2>
@@ -813,8 +1115,115 @@ function generateReport() {
         </div>
     `;
     
-    // Draw radar after DOM is ready
-    requestAnimationFrame(() => drawRadarChart("radarChart", scores));
+    // Draw charts and animate after DOM
+    requestAnimationFrame(() => {
+        drawRadarChart("radarChart", scores);
+        drawOctalysisChart("octalysisChart", drives);
+        animateCounter("animatedScore", overall, 1200);
+    });
+}
+
+function drawOctalysisChart(canvasId, drives) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height;
+    const cx = w / 2, cy = h / 2;
+    const maxR = Math.min(cx, cy) - 40;
+    
+    const n = drives.length;
+    const angleStep = (2 * Math.PI) / n;
+    
+    ctx.clearRect(0, 0, w, h);
+    
+    // Grid rings (octagonal)
+    for (let ring = 1; ring <= 4; ring++) {
+        const r = (ring / 4) * maxR;
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+            const angle = -Math.PI / 2 + i * angleStep;
+            const px = cx + r * Math.cos(angle);
+            const py = cy + r * Math.sin(angle);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = "rgba(255,255,255,0.06)";
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+    }
+    
+    // Axis lines + labels
+    drives.forEach((d, i) => {
+        const angle = -Math.PI / 2 + i * angleStep;
+        const lx = cx + maxR * Math.cos(angle);
+        const ly = cy + maxR * Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(lx, ly);
+        ctx.strokeStyle = "rgba(255,255,255,0.04)";
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        
+        // Labels with real hex colors
+        const labelR = maxR + 20;
+        const tx = cx + labelR * Math.cos(angle);
+        const ty = cy + labelR * Math.sin(angle);
+        ctx.fillStyle = d.color;
+        ctx.font = "bold 10px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(d.label, tx, ty);
+    });
+    
+    // Data polygon — filled
+    ctx.beginPath();
+    drives.forEach((d, i) => {
+        const angle = -Math.PI / 2 + i * angleStep;
+        const r = d.val * maxR;
+        const px = cx + r * Math.cos(angle);
+        const py = cy + r * Math.sin(angle);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    });
+    ctx.closePath();
+    
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+    grad.addColorStop(0, "rgba(139,92,246,0.25)");
+    grad.addColorStop(1, "rgba(99,102,241,0.05)");
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.strokeStyle = "#8b5cf6";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Data points with per-drive color
+    drives.forEach((d, i) => {
+        const angle = -Math.PI / 2 + i * angleStep;
+        const r = d.val * maxR;
+        const px = cx + r * Math.cos(angle);
+        const py = cy + r * Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = d.color;
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+    });
+    
+    // Center badge
+    ctx.fillStyle = "rgba(139,92,246,0.15)";
+    ctx.beginPath();
+    ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle = "#c4b5fd";
+    ctx.font = "bold 11px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("8CD", cx, cy);
 }
 
 function backToAssessment() {
@@ -866,11 +1275,14 @@ function loadProgress() {
 }
 
 // ===== TOAST =====
-function showToast(msg) {
+function showToast(msg, level) {
     const toast = document.getElementById("toast");
     toast.textContent = msg;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2500);
+    toast.className = "toast show";
+    if (level !== undefined) {
+        toast.classList.add(`toast-level-${level}`);
+    }
+    setTimeout(() => toast.className = "toast", 2500);
 }
 
 // ===== KEYBOARD NAV =====
