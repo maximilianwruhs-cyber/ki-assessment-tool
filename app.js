@@ -1,5 +1,6 @@
 // ===== TOOL RECOMMENDATION DATABASE =====
 const TOOLS = {
+    // --- CRM & Sales ---
     crm: {
         name: "Twenty CRM",
         desc: "Open-Source CRM für Kontakte, Deals & Pipeline",
@@ -8,6 +9,24 @@ const TOOLS = {
         icon: "📇",
         how: "Docker-Container starten, Kontakte importieren, Pipeline konfigurieren."
     },
+    erpnext: {
+        name: "ERPNext",
+        desc: "All-in-One ERP: Buchhaltung, CRM, HR, Lager, Projekte",
+        url: "https://erpnext.com",
+        setup: "~3 Stunden",
+        icon: "🏢",
+        how: "Docker-Setup oder Frappe Cloud nutzen, Firmenprofil anlegen, Module aktivieren."
+    },
+    // --- Projektmanagement ---
+    projectMgmt: {
+        name: "Plane",
+        desc: "Open-Source Projektmanagement (wie Jira/Linear)",
+        url: "https://plane.so",
+        setup: "~30 Minuten",
+        icon: "📋",
+        how: "Docker starten, Projekt anlegen, Kanban-Board und Sprints konfigurieren."
+    },
+    // --- Dateien & Cloud ---
     fileSync: {
         name: "Nextcloud",
         desc: "Eigene Cloud für Dateien, Kalender & Zusammenarbeit",
@@ -16,6 +35,7 @@ const TOOLS = {
         icon: "☁️",
         how: "Docker oder Hosting-Paket einrichten, Ordnerstruktur anlegen, Sync-Client installieren."
     },
+    // --- Automatisierung ---
     automation: {
         name: "n8n",
         desc: "Workflow-Automatisierung (wie Zapier, aber Open Source)",
@@ -24,6 +44,15 @@ const TOOLS = {
         icon: "⚡",
         how: "Docker starten, erster Workflow: E-Mail → CRM-Eintrag automatisch anlegen."
     },
+    activepieces: {
+        name: "Activepieces",
+        desc: "No-Code Automatisierung mit KI-Integration",
+        url: "https://activepieces.com",
+        setup: "~30 Minuten",
+        icon: "🧩",
+        how: "Docker starten, erste Automatisierung: Formular → E-Mail → Datenbank."
+    },
+    // --- Lokale KI ---
     localAI: {
         name: "Ollama + Open WebUI",
         desc: "Lokale KI (LLMs) auf Ihrem eigenen Rechner, 100% privat",
@@ -32,6 +61,31 @@ const TOOLS = {
         icon: "🤖",
         how: "Ollama installieren, Modell laden (z.B. Llama 3), Open WebUI als Chat-Oberfläche starten."
     },
+    localRAG: {
+        name: "AnythingLLM",
+        desc: "Lokaler KI-Chat über eigene Dokumente (RAG)",
+        url: "https://anythingllm.com",
+        setup: "~45 Minuten",
+        icon: "🧠",
+        how: "Installieren, Workspace erstellen, PDFs/Docs hochladen, sofort Fragen stellen."
+    },
+    whisper: {
+        name: "Whisper (OpenAI)",
+        desc: "Lokale Sprache-zu-Text Transkription, 100% offline",
+        url: "https://github.com/openai/whisper",
+        setup: "~20 Minuten",
+        icon: "🎙️",
+        how: "Python installieren, pip install whisper, Audiodateien transkribieren."
+    },
+    stableDiffusion: {
+        name: "Stable Diffusion (ComfyUI)",
+        desc: "Lokale Bildgenerierung für Marketing & Produktfotos",
+        url: "https://github.com/comfyanonymous/ComfyUI",
+        setup: "~1 Stunde",
+        icon: "🎨",
+        how: "ComfyUI installieren, Modell laden, erste Produktbilder und Marketing-Grafiken generieren."
+    },
+    // --- Wissensmanagement ---
     wiki: {
         name: "Outline",
         desc: "Team-Wiki mit KI-Suche für internes Wissen",
@@ -40,6 +94,15 @@ const TOOLS = {
         icon: "📚",
         how: "Docker starten, Wissensbasis strukturieren, Prozesse & SOPs dokumentieren."
     },
+    bookstack: {
+        name: "BookStack",
+        desc: "Einfaches Wiki für Prozessdokumentation & Handbücher",
+        url: "https://www.bookstackapp.com",
+        setup: "~30 Minuten",
+        icon: "📖",
+        how: "Docker starten, Bücher/Kapitel anlegen, Teamwissen zentral dokumentieren."
+    },
+    // --- Dokumentenverwaltung ---
     docs: {
         name: "Paperless-ngx",
         desc: "KI-gestützte Dokumentenverwaltung (Rechnungen, Verträge, Belege)",
@@ -48,6 +111,7 @@ const TOOLS = {
         icon: "📄",
         how: "Docker starten, Scanner/E-Mail-Import konfigurieren, automatische Tagging-Regeln erstellen."
     },
+    // --- E-Mail & Marketing ---
     email: {
         name: "Listmonk",
         desc: "Newsletter & E-Mail-Outreach (selbst gehostet)",
@@ -56,6 +120,95 @@ const TOOLS = {
         icon: "📧",
         how: "Docker starten, Kontaktlisten importieren, E-Mail-Templates erstellen."
     },
+    mautic: {
+        name: "Mautic",
+        desc: "Marketing-Automatisierung: Lead Scoring, Kampagnen, Landing Pages",
+        url: "https://mautic.org",
+        setup: "~2 Stunden",
+        icon: "📣",
+        how: "Docker starten, Kontakte importieren, erste E-Mail-Kampagne mit Scoring aufsetzen."
+    },
+    // --- Kommunikation ---
+    chat: {
+        name: "Rocket.Chat",
+        desc: "Selbst gehosteter Team-Chat (wie Slack, aber souverän)",
+        url: "https://rocket.chat",
+        setup: "~1 Stunde",
+        icon: "💬",
+        how: "Docker starten, Kanäle erstellen, Team einladen, Integrationen aktivieren."
+    },
+    // --- Analytics ---
+    analytics: {
+        name: "Plausible Analytics",
+        desc: "Datenschutzfreundliche Web-Analytics (ohne Cookies)",
+        url: "https://plausible.io",
+        setup: "~30 Minuten",
+        icon: "📊",
+        how: "Docker starten, Script auf Website einbinden, DSGVO-konforme Auswertung sofort nutzen."
+    },
+    metabase: {
+        name: "Metabase",
+        desc: "Business Intelligence & Dashboards für Ihre Daten",
+        url: "https://metabase.com",
+        setup: "~1 Stunde",
+        icon: "📈",
+        how: "Docker starten, Datenbank verbinden, erste Dashboards und Reports erstellen."
+    },
+    // --- Rechnungen & Finanzen ---
+    invoicing: {
+        name: "Invoice Ninja",
+        desc: "Open-Source Rechnungs- und Angebotssoftware",
+        url: "https://invoiceninja.com",
+        setup: "~30 Minuten",
+        icon: "💰",
+        how: "Docker starten, Firmenprofil konfigurieren, erste Rechnung erstellen und versenden."
+    },
+    // --- Social Media ---
+    socialMedia: {
+        name: "Mixpost",
+        desc: "Social-Media-Planung & Scheduling (selbst gehostet)",
+        url: "https://mixpost.app",
+        setup: "~30 Minuten",
+        icon: "📱",
+        how: "Docker starten, Social-Media-Konten verbinden, Posts vorplanen und automatisch posten."
+    },
+    // --- Kalender & Termine ---
+    calendar: {
+        name: "Cal.com",
+        desc: "Open-Source Terminbuchung (wie Calendly)",
+        url: "https://cal.com",
+        setup: "~20 Minuten",
+        icon: "📅",
+        how: "Account erstellen oder selbst hosten, Verfügbarkeiten einstellen, Buchungslink teilen."
+    },
+    // --- Formulare & Umfragen ---
+    forms: {
+        name: "Formbricks",
+        desc: "Open-Source Umfrage- und Feedback-Tool",
+        url: "https://formbricks.com",
+        setup: "~20 Minuten",
+        icon: "📝",
+        how: "Docker starten, Umfrage erstellen, als Link oder Website-Widget einbinden."
+    },
+    // --- Video & Meetings ---
+    video: {
+        name: "Jitsi Meet",
+        desc: "Selbst gehostete Videokonferenzen (DSGVO-konform)",
+        url: "https://jitsi.org",
+        setup: "~1 Stunde",
+        icon: "🎥",
+        how: "Docker starten, eigene Meeting-URL konfigurieren, ohne Account nutzbar."
+    },
+    // --- Passwörter & Sicherheit ---
+    passwords: {
+        name: "Vaultwarden",
+        desc: "Selbst gehosteter Passwort-Manager (Bitwarden-kompatibel)",
+        url: "https://github.com/dani-garcia/vaultwarden",
+        setup: "~20 Minuten",
+        icon: "🔐",
+        how: "Docker starten, Team-Vault einrichten, Browser-Extension installieren."
+    },
+    // --- Compliance & Governance ---
     compliance: {
         name: "DSGVO Schnell-Audit",
         desc: "Prüfliste für datenschutzkonformen KI-Einsatz",
@@ -64,6 +217,15 @@ const TOOLS = {
         icon: "🛡️",
         how: "Verarbeitungsverzeichnis anlegen, Auftragsverarbeitungsverträge prüfen, Datenschutzerklärung aktualisieren."
     },
+    openProject: {
+        name: "OpenProject",
+        desc: "Projektmanagement mit Gantt, Zeiterfassung & Compliance-Tracking",
+        url: "https://openproject.org",
+        setup: "~1 Stunde",
+        icon: "🗂️",
+        how: "Docker starten, Projektstruktur anlegen, Arbeitspakete und Meilensteine definieren."
+    },
+    // --- Schulung & Training ---
     training: {
         name: "Prompt-Engineering Workshop",
         desc: "Strukturierte Einführung in effektives Prompting",
@@ -71,6 +233,14 @@ const TOOLS = {
         setup: "~2 Stunden",
         icon: "🎓",
         how: "Workshop-Format: Grundlagen → Techniken → Praxisübungen mit echten Firmendaten."
+    },
+    aiLiteracy: {
+        name: "KI-Grundlagen Schulung",
+        desc: "Was ist KI? Chancen, Grenzen, ethische Fragen — für alle Mitarbeiter",
+        url: "",
+        setup: "~3 Stunden",
+        icon: "🧑‍🏫",
+        how: "Präsentation + Live-Demo: ChatGPT vs. lokale KI, Datenschutz, praktische Anwendungen."
     }
 };
 
@@ -88,10 +258,10 @@ const MODULES = [
                     enterprise: "Wo steht Ihre Organisation auf der KI-Roadmap?"
                 },
                 choices: [
-                    { text: "Ich habe davon gehört, aber noch nichts ausprobiert", level: 0, tags: ["training"] },
-                    { text: "Ich nutze ChatGPT / Copilot gelegentlich", level: 1, tags: ["training"] },
-                    { text: "Ich setze KI-Tools aktiv im Arbeitsalltag ein", level: 2, tags: [] },
-                    { text: "Ich baue eigene KI-Lösungen / Automatisierungen", level: 3, tags: [] }
+                    { text: "Ich habe davon gehört, aber noch nichts ausprobiert", level: 0, tags: ["training", "aiLiteracy"] },
+                    { text: "Ich nutze ChatGPT / Copilot gelegentlich", level: 1, tags: ["training", "localAI"] },
+                    { text: "Ich setze KI-Tools aktiv im Arbeitsalltag ein", level: 2, tags: ["localAI", "localRAG"] },
+                    { text: "Ich baue eigene KI-Lösungen / Automatisierungen", level: 3, tags: ["localRAG"] }
                 ],
                 context: "Bestimmt die Flughöhe: Basics erklären oder direkt in Prozesse einsteigen?"
             }
@@ -109,10 +279,10 @@ const MODULES = [
                     enterprise: "Welches strategische Geschäftsziel soll KI adressieren?"
                 },
                 choices: [
-                    { text: "Neue Kunden gewinnen / mehr Umsatz", level: 1, tags: ["crm", "email"] },
-                    { text: "Zeit sparen bei repetitiven Aufgaben", level: 1, tags: ["automation"] },
-                    { text: "Kosten senken / Effizienz steigern", level: 2, tags: ["automation", "docs"] },
-                    { text: "Neue Produkte/Services entwickeln", level: 3, tags: ["localAI"] }
+                    { text: "Neue Kunden gewinnen / mehr Umsatz", level: 1, tags: ["crm", "email", "mautic", "calendar", "socialMedia"] },
+                    { text: "Zeit sparen bei repetitiven Aufgaben", level: 1, tags: ["automation", "activepieces", "docs"] },
+                    { text: "Kosten senken / Effizienz steigern", level: 2, tags: ["automation", "docs", "invoicing", "metabase"] },
+                    { text: "Neue Produkte/Services entwickeln", level: 3, tags: ["localAI", "localRAG", "stableDiffusion"] }
                 ],
                 context: "Steuert die gesamte Tool-Auswahl. Umsatz > Effizienz > Innovation in der Priorität."
             },
@@ -125,10 +295,10 @@ const MODULES = [
                     enterprise: "Gibt es ein gesichertes Projektbudget mit C-Level Sponsorship?"
                 },
                 choices: [
-                    { text: "Kein Budget, nur meine eigene Zeit", level: 0, tags: [] },
-                    { text: "Bis 50€/Monat und einige Stunden pro Woche", level: 1, tags: [] },
-                    { text: "100-500€/Monat mit dediziertem Zeitblock", level: 2, tags: [] },
-                    { text: "Festes Projektbudget >500€/Monat", level: 3, tags: [] }
+                    { text: "Kein Budget, nur meine eigene Zeit", level: 0, tags: ["calendar", "forms"] },
+                    { text: "Bis 50€/Monat und einige Stunden pro Woche", level: 1, tags: ["localAI"] },
+                    { text: "100-500€/Monat mit dediziertem Zeitblock", level: 2, tags: ["erpnext"] },
+                    { text: "Festes Projektbudget >500€/Monat", level: 3, tags: ["erpnext", "metabase"] }
                 ],
                 context: "Bestimmt ob wir Open-Source (kostenlos) oder SaaS (schneller, aber Abo) empfehlen."
             },
@@ -141,10 +311,10 @@ const MODULES = [
                     enterprise: "Welche harten ROI-Metriken muss das Projekt in 12 Monaten liefern?"
                 },
                 choices: [
-                    { text: "Keine Ahnung / Hab mir dazu keine Gedanken gemacht", level: 0, tags: [] },
-                    { text: "Gefühlt weniger Stress und mehr Zeit", level: 1, tags: [] },
-                    { text: "Konkrete Stunden-Ersparnis oder erste Kunden", level: 2, tags: ["crm"] },
-                    { text: "Definierte KPIs mit Vorher/Nachher-Messung", level: 3, tags: [] }
+                    { text: "Keine Ahnung / Hab mir dazu keine Gedanken gemacht", level: 0, tags: ["metabase", "analytics"] },
+                    { text: "Gefühlt weniger Stress und mehr Zeit", level: 1, tags: ["analytics", "projectMgmt"] },
+                    { text: "Konkrete Stunden-Ersparnis oder erste Kunden", level: 2, tags: ["crm", "metabase"] },
+                    { text: "Definierte KPIs mit Vorher/Nachher-Messung", level: 3, tags: ["metabase"] }
                 ],
                 context: "Ohne Baseline kein Beweis. Wir definieren jetzt gemeinsam die Messlatte."
             },
@@ -157,10 +327,10 @@ const MODULES = [
                     enterprise: "Welchen Einfluss hat Nichtstun auf Marktanteile und Margen?"
                 },
                 choices: [
-                    { text: "Eigentlich nichts, wäre halt nice-to-have", level: 0, tags: [] },
-                    { text: "Ich verpasse Chancen, aber es geht weiter", level: 1, tags: [] },
-                    { text: "Wettbewerber ziehen vorbei, Margen sinken", level: 2, tags: [] },
-                    { text: "Existenzbedrohend — ich muss JETZT handeln", level: 3, tags: [] }
+                    { text: "Eigentlich nichts, wäre halt nice-to-have", level: 0, tags: ["training"] },
+                    { text: "Ich verpasse Chancen, aber es geht weiter", level: 1, tags: ["automation", "crm"] },
+                    { text: "Wettbewerber ziehen vorbei, Margen sinken", level: 2, tags: ["localAI", "automation", "mautic"] },
+                    { text: "Existenzbedrohend — ich muss JETZT handeln", level: 3, tags: ["localAI", "automation", "erpnext"] }
                 ],
                 context: "Handlungsdruck-Check. Bei Level 0-1 fehlt der Antrieb für echte Umsetzung."
             }
@@ -178,10 +348,10 @@ const MODULES = [
                     enterprise: "Wie sieht der Ist-Prozess jenseits der Systemstandards aus?"
                 },
                 choices: [
-                    { text: "Alles ad-hoc, kein fester Ablauf", level: 0, tags: ["wiki"] },
-                    { text: "Grobe Routine, aber viel manuelles Hin-und-Her", level: 1, tags: ["automation"] },
-                    { text: "Definierte Abläufe, aber mit manuellen Workarounds", level: 2, tags: ["automation"] },
-                    { text: "Dokumentierte SOPs mit klaren Verantwortlichkeiten", level: 3, tags: [] }
+                    { text: "Alles ad-hoc, kein fester Ablauf", level: 0, tags: ["wiki", "bookstack", "projectMgmt"] },
+                    { text: "Grobe Routine, aber viel manuelles Hin-und-Her", level: 1, tags: ["automation", "activepieces", "projectMgmt"] },
+                    { text: "Definierte Abläufe, aber mit manuellen Workarounds", level: 2, tags: ["automation", "openProject"] },
+                    { text: "Dokumentierte SOPs mit klaren Verantwortlichkeiten", level: 3, tags: ["wiki"] }
                 ],
                 context: "Wo Copy&Paste dominiert, starten die besten Automatisierungen."
             },
@@ -194,10 +364,10 @@ const MODULES = [
                     enterprise: "Wo liegt der kritischste Engpass im Wertstrom?"
                 },
                 choices: [
-                    { text: "Kundenakquise (Mails, Angebote, Nachfassen)", level: 1, tags: ["crm", "email", "automation"] },
-                    { text: "Verwaltung (Rechnungen, Dokumente, Ablage)", level: 1, tags: ["docs", "automation"] },
-                    { text: "Content-Erstellung (Texte, Präsentationen, Social Media)", level: 1, tags: ["localAI"] },
-                    { text: "Kommunikation (E-Mails, Meetings, Abstimmung)", level: 1, tags: ["automation", "email"] }
+                    { text: "Kundenakquise (Mails, Angebote, Nachfassen)", level: 1, tags: ["crm", "email", "automation", "mautic", "calendar", "invoicing"] },
+                    { text: "Verwaltung (Rechnungen, Dokumente, Ablage)", level: 1, tags: ["docs", "automation", "invoicing", "fileSync"] },
+                    { text: "Content-Erstellung (Texte, Präsentationen, Social Media)", level: 1, tags: ["localAI", "stableDiffusion", "socialMedia", "whisper"] },
+                    { text: "Kommunikation (E-Mails, Meetings, Abstimmung)", level: 1, tags: ["automation", "email", "chat", "video", "calendar"] }
                 ],
                 context: "Der Flaschenhals bestimmt das erste Quick-Win-Projekt."
             },
@@ -210,9 +380,9 @@ const MODULES = [
                     enterprise: "Wie hoch ist der FTE-Anteil an rein manuellen, repetitiven Tasks?"
                 },
                 choices: [
-                    { text: "Über 50% — ich ertrinke in Routinearbeit", level: 0, tags: ["automation"] },
-                    { text: "Ca. 30-50% — es nervt, aber geht", level: 1, tags: ["automation"] },
-                    { text: "Ca. 10-30% — das Meiste läuft schon gut", level: 2, tags: [] },
+                    { text: "Über 50% — ich ertrinke in Routinearbeit", level: 0, tags: ["automation", "activepieces", "docs", "invoicing"] },
+                    { text: "Ca. 30-50% — es nervt, aber geht", level: 1, tags: ["automation", "activepieces"] },
+                    { text: "Ca. 10-30% — das Meiste läuft schon gut", level: 2, tags: ["localRAG"] },
                     { text: "Unter 10% — fast alles ist optimiert", level: 3, tags: [] }
                 ],
                 context: "Über 30% = sofortiges Automatisierungspotenzial."
@@ -231,10 +401,10 @@ const MODULES = [
                     enterprise: "Wie ist Ihre Datenarchitektur aufgebaut?"
                 },
                 choices: [
-                    { text: "Im Kopf / auf Papier / Notizen", level: 0, tags: ["crm", "fileSync", "wiki"] },
-                    { text: "Verstreut in Mail, Drive, Ordnern, WhatsApp", level: 1, tags: ["fileSync", "crm"] },
-                    { text: "Zentral in einem System (CRM/ERP/Notion)", level: 2, tags: [] },
-                    { text: "Strukturiert mit API-Zugang und Backups", level: 3, tags: [] }
+                    { text: "Im Kopf / auf Papier / Notizen", level: 0, tags: ["crm", "fileSync", "wiki", "bookstack", "passwords"] },
+                    { text: "Verstreut in Mail, Drive, Ordnern, WhatsApp", level: 1, tags: ["fileSync", "crm", "chat", "docs"] },
+                    { text: "Zentral in einem System (CRM/ERP/Notion)", level: 2, tags: ["localRAG", "metabase"] },
+                    { text: "Strukturiert mit API-Zugang und Backups", level: 3, tags: ["metabase"] }
                 ],
                 context: "KI braucht zugängliche Daten. Verstreut = zuerst konsolidieren."
             },
@@ -247,9 +417,9 @@ const MODULES = [
                     enterprise: "Gibt es eine formelle Data Governance mit Qualitätssicherung?"
                 },
                 choices: [
-                    { text: "Ich suche ständig und finde nichts", level: 0, tags: ["crm", "docs"] },
-                    { text: "Meistens finde ich es, aber vieles ist veraltet", level: 1, tags: ["crm"] },
-                    { text: "Daten sind aktuell, aber nicht immer vollständig", level: 2, tags: [] },
+                    { text: "Ich suche ständig und finde nichts", level: 0, tags: ["crm", "docs", "fileSync", "bookstack"] },
+                    { text: "Meistens finde ich es, aber vieles ist veraltet", level: 1, tags: ["crm", "docs", "wiki"] },
+                    { text: "Daten sind aktuell, aber nicht immer vollständig", level: 2, tags: ["localRAG"] },
                     { text: "Alles gepflegt, aktuell und vollständig", level: 3, tags: [] }
                 ],
                 context: "Garbage in, garbage out. Unsaubere Daten = KI halluziniert."
@@ -264,9 +434,9 @@ const MODULES = [
                 },
                 choices: [
                     { text: "Nein, alles unkritisch — kann in die Cloud", level: 3, tags: [] },
-                    { text: "Teilweise sensibel — muss DSGVO-konform bleiben", level: 2, tags: ["localAI", "compliance"] },
-                    { text: "Hochsensibel — darf die Firma nie verlassen", level: 1, tags: ["localAI"] },
-                    { text: "Weiß ich nicht genau", level: 0, tags: ["compliance"] }
+                    { text: "Teilweise sensibel — muss DSGVO-konform bleiben", level: 2, tags: ["localAI", "compliance", "passwords", "video"] },
+                    { text: "Hochsensibel — darf die Firma nie verlassen", level: 1, tags: ["localAI", "passwords", "fileSync", "chat"] },
+                    { text: "Weiß ich nicht genau", level: 0, tags: ["compliance", "passwords", "aiLiteracy"] }
                 ],
                 context: "Sensible Daten → kein ChatGPT. Wir brauchen lokale/souveräne Lösungen."
             }
@@ -284,10 +454,10 @@ const MODULES = [
                     enterprise: "Gibt es organisationsweite KI-Literacy-Programme?"
                 },
                 choices: [
-                    { text: "Keine Erfahrung — brauche Grundlagen-Einführung", level: 0, tags: ["training"] },
-                    { text: "Grundlagen da, aber unsicher bei Prompting", level: 1, tags: ["training"] },
-                    { text: "Nutze KI-Tools sicher und regelmäßig", level: 2, tags: [] },
-                    { text: "Kann selbst Workflows bauen und andere schulen", level: 3, tags: [] }
+                    { text: "Keine Erfahrung — brauche Grundlagen-Einführung", level: 0, tags: ["training", "aiLiteracy"] },
+                    { text: "Grundlagen da, aber unsicher bei Prompting", level: 1, tags: ["training", "localAI"] },
+                    { text: "Nutze KI-Tools sicher und regelmäßig", level: 2, tags: ["localRAG", "whisper"] },
+                    { text: "Kann selbst Workflows bauen und andere schulen", level: 3, tags: ["automation", "activepieces"] }
                 ],
                 context: "Das Tool bringt nichts, wenn man nicht weiß, wie man fragt."
             },
@@ -300,10 +470,10 @@ const MODULES = [
                     enterprise: "Wie ist die Haltung von Betriebsrat und Belegschaft zur KI?"
                 },
                 choices: [
-                    { text: "Große Skepsis / Angst vor Jobverlust oder Kontrollverlust", level: 0, tags: ["training"] },
-                    { text: "Unsicherheit, aber Offenheit für Informationen", level: 1, tags: ["training"] },
-                    { text: "Neutral bis positiv — 'zeigt mir, was es kann'", level: 2, tags: [] },
-                    { text: "Begeistert — Team will mehr KI, nicht weniger", level: 3, tags: [] }
+                    { text: "Große Skepsis / Angst vor Jobverlust oder Kontrollverlust", level: 0, tags: ["training", "aiLiteracy"] },
+                    { text: "Unsicherheit, aber Offenheit für Informationen", level: 1, tags: ["training", "aiLiteracy", "forms"] },
+                    { text: "Neutral bis positiv — 'zeigt mir, was es kann'", level: 2, tags: ["localAI", "stableDiffusion"] },
+                    { text: "Begeistert — Team will mehr KI, nicht weniger", level: 3, tags: ["localAI", "localRAG", "whisper"] }
                 ],
                 context: "Widerstand blockiert Adoption. Erst Ängste adressieren, dann Tools einführen."
             }
@@ -321,9 +491,9 @@ const MODULES = [
                     enterprise: "Existiert ein AI-Governance-Framework inkl. EU AI Act Readiness?"
                 },
                 choices: [
-                    { text: "Keine Ahnung — habe mich nie damit beschäftigt", level: 0, tags: ["compliance"] },
-                    { text: "Grobe Vorstellung, aber nichts Konkretes umgesetzt", level: 1, tags: ["compliance"] },
-                    { text: "DSGVO-Grundlagen bekannt, Datenschutzerklärung vorhanden", level: 2, tags: [] },
+                    { text: "Keine Ahnung — habe mich nie damit beschäftigt", level: 0, tags: ["compliance", "passwords", "analytics"] },
+                    { text: "Grobe Vorstellung, aber nichts Konkretes umgesetzt", level: 1, tags: ["compliance", "analytics"] },
+                    { text: "DSGVO-Grundlagen bekannt, Datenschutzerklärung vorhanden", level: 2, tags: ["analytics"] },
                     { text: "Vollständiges Verarbeitungsverzeichnis und AVVs vorhanden", level: 3, tags: [] }
                 ],
                 context: "Unwissenheit schützt nicht. Ein DSGVO-Verstoß kann teuer werden."
@@ -645,11 +815,21 @@ function collectRecommendedTools() {
         const a = state.answers[q.key];
         if (a && a.choiceIndex !== undefined) {
             const choice = q.choices[a.choiceIndex];
-            if (choice.level <= 1) {
+            // Level 0-1: critical gaps → always recommend
+            // Level 2: improvement opportunity → also recommend
+            // Level 3: already strong → only if explicitly tagged
+            if (choice.level <= 2) {
+                choice.tags.forEach(t => toolTags.add(t));
+            } else {
+                // Level 3 tags are optional enhancements
                 choice.tags.forEach(t => toolTags.add(t));
             }
         }
     });
+    // Baseline: always recommend passwords + file sync if not already covered
+    if (toolTags.size < 8) {
+        ['passwords', 'fileSync', 'calendar'].forEach(t => toolTags.add(t));
+    }
     return [...toolTags].map(tag => TOOLS[tag]).filter(Boolean);
 }
 
